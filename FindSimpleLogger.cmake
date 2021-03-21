@@ -18,7 +18,7 @@ else(SimpleLogger_INCLUDE_DIR)
 	message(STATUS "SimpleLogger was not found locally, attempting to fetch it online")
 	FetchContent_Declare(simplelogger        
 		GIT_REPOSITORY "git@github.com:prb17/SimpleLogger.git"
-        	GIT_TAG "v1.0.0"
+        	GIT_TAG "main"
         	)
 
 	FetchContent_MakeAvailable(simplelogger)
