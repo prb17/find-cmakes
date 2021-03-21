@@ -33,7 +33,6 @@ else(Utils_IDIRS)
     endif()
     
     set(myUtils_DIR "${utils_SOURCE_DIR}")
-    message(STATUS "other test message")
     message(STATUS "downloaded utils src dir: ${myUtils_DIR}")
 
     find_path (utils_PLATFORM_INCLUDE_DIR NAMES "platform.h"
