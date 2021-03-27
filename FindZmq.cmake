@@ -1,5 +1,5 @@
 # - Try to find ZMQ
-# define Zmq_ROOT as your local zmq build directory
+# define Zmq_ROOT to your local zmq build directory
 # Once done this will define
 # Zmq_FOUND - System has ZMQ
 # Zmq_INCLUDE_DIRS - The ZMQ include directories
@@ -23,25 +23,20 @@ if( Zmq_INCLUDE_DIR AND Zmq_LIBRARY )
     set ( Zmq_INCLUDE_DIRS ${Zmq_INCLUDE_DIR} )
 else( Zmq_INCLUDE_DIR AND Zmq_LIBRARY )
     message(STATUS "Zmq was not found locally, attempting to fetch it online")
-    FetchContent_Declare(Zmq        
+    FetchContent_Declare(zmq        
 		        GIT_REPOSITORY "https://github.com/zeromq/libzmq.git"
         	    GIT_TAG "master"
         	)
-
-	FetchContent_MakeAvailable(Zmq)
-    FetchContent_GetProperties(Zmq)
-    if(NOT Zmq_POPULATED)
-        FetchContent_Populate(Zmq)
-    endif()
+	FetchContent_MakeAvailable(zmq)
         
-    set(Zmq_ROOT "${Zmq_SOURCE_DIR}")
+    set(Zmq_ROOT "${zmq_SOURCE_DIR}")
     message(VERBOSE "downloaded Zmq src dir: ${Zmq_ROOT}")
 
     find_path ( Zmq_INCLUDE_DIR NAMES "zmq.h"
                         HINTS "${Zmq_ROOT}/include" )
 
     set ( Zmq_INCLUDE_DIRS ${Zmq_INCLUDE_DIR} )
-    set ( Zmq_LIBRARIES_DIR "${Zmq_BINARY_DIR}")
+    set ( Zmq_LIBRARIES_DIR "${zmq_BINARY_DIR}/lib" )
 endif( Zmq_INCLUDE_DIR AND Zmq_LIBRARY)
 
 
