@@ -46,7 +46,7 @@ endif( Zmq_INCLUDE_DIR AND Zmq_LIBRARY)
 
 
 include ( FindPackageHandleStandardArgs )
-# handle the QUIETLY and REQUIRED arguments and set ZMQ_FOUND to TRUE
+# handle the QUIETLY and REQUIRED arguments and set Zmq_FOUND to TRUE
 # if all listed variables are TRUE
 if( Zmq_LIBRARY )
     find_package_handle_standard_args ( Zmq DEFAULT_MSG Zmq_LIBRARY Zmq_INCLUDE_DIR )
