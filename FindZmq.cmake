@@ -15,13 +15,13 @@ find_library ( Zmq_LIBRARY  NAMES "zmq"
                             HINTS "${Zmq_ROOT}/lib/")
 
 
-if( zmq_INCLUDE_DIR AND zmq_LIBRARY )
+if( Zmq_INCLUDE_DIR AND Zmq_LIBRARY )
     message(STATUS "found Zmq locally")
     message(VERBOSE "Zmq include dir: ${Zmq_INCLUDE_DIR}")
     message(VERBOSE "Zmq lib: ${Zmq_LIBRARY} ")
     set ( Zmq_LIBRARIES ${Zmq_LIBRARY} )
     set ( Zmq_INCLUDE_DIRS ${Zmq_INCLUDE_DIR} )
-else()
+else( Zmq_INCLUDE_DIR AND Zmq_LIBRARY )
     message(STATUS "Zmq was not found locally, attempting to fetch it online")
     FetchContent_Declare(Zmq        
 		        GIT_REPOSITORY "https://github.com/zeromq/libzmq.git"
