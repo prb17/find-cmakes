@@ -7,6 +7,15 @@
 # or
 # Czmq_LIBRARIES_DIR if no local installation provided
 
+#Czmq needs to know where zmq incs and libs are located
+set(libzmq_INCLUDE_DIRS ${Zmq_INCLUDE_DIRS})
+#libzmq.so isn't created at configuration time but we trick czmq into 
+#thinking it does exist as we know it will be at that location at build time
+if(NOT Zmq_LIBRARIES)
+    set(libzmq_LIBRARIES "${Zmq_LIBRARIES_DIR}/libzmq.so")
+else(NOT Zmq_LIBRARIES) 
+    set(libzmq_LIBRARIES ${Zmq_LIBRARIES})
+endif(NOT Zmq_LIBRARIES)
 
 find_path ( Czmq_INCLUDE_DIR NAMES "czmq.h"
                             HINTS "${Czmq_ROOT}/include/" )
@@ -23,11 +32,11 @@ if( Czmq_INCLUDE_DIR AND Czmq_LIBRARY )
     set ( Czmq_INCLUDE_DIRS ${Czmq_INCLUDE_DIR} )
 else()
     message(STATUS "Czmq was not found locally, attempting to fetch it online")
-    FetchContent_Declare(Czmq        
+    FetchContent_Declare(czmq        
 		        GIT_REPOSITORY "https://github.com/zeromq/czmq.git"
         	    GIT_TAG "master"
         	)
-	FetchContent_MakeAvailable(Czmq)
+	FetchContent_MakeAvailable(czmq)
         
     set(Czmq_ROOT "${czmq_SOURCE_DIR}")
     message(VERBOSE "downloaded Czmq src dir: ${Czmq_ROOT}")
