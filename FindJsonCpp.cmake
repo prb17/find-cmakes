@@ -6,10 +6,10 @@
 # Specify a JsonCpp_FIND_VERSION by
 #   find_package(JsonCpp VERSION 1.9.5)
 # Sepcify the JsonCpp_FIND_COMPONENTS by:
-#   find_package(JsonCpp COMPONENTS jsoncpp)
+#   find_package(JsonCpp COMPONENTS jsoncpp_lib)
 #   NOTE: jsoncpp is the only library available with this package
 # Specify both by:
-#   find_package(JsonCpp VERSION 1.9.5 COMPONENTS jsconcpp)
+#   find_package(JsonCpp VERSION 1.9.5 COMPONENTS jsconcpp_lib)
 #
 # 
 # Once done this will define
@@ -52,12 +52,12 @@ function(FindJsonCpp ROOT_DIR)
         set(JsonCpp_LIBRARIES_DIR ${JsonCpp_LIBRARY_DIR})       
         set(JsonCpp_LIBRARIES_DIR ${JsonCpp_LIBRARY_DIR} PARENT_SCOPE)
         message(DEBUG "JsonCpp_LIBRARIES_DIR: ${JsonCpp_LIBRARIES_DIR}")         
-        set(JsonCpp_EXTERNAL_LIB_NAME jsoncpp_lib)       
+        set(JsonCpp_EXTERNAL_LIB_NAME ${JsonCpp_FIND_COMPONENTS}) # TODO: how to get this target name from FetchContent? If even possible?
         set(JsonCpp_EXTERNAL_LIB_NAME ${JsonCpp_EXTERNAL_LIB_NAME} PARENT_SCOPE)
         message(DEBUG "JsonCpp_EXTERNAL_LIB_NAME: ${JsonCpp_EXTERNAL_LIB_NAME}")      
    
         message(DEBUG "Setting JsonCpp_ROOT as: '${ROOT_DIR}'")
-        set(JsonCpp_ROOT "${ROOT_DIR}")
+        set(JsonCpp_ROOT CACHE INTERNAL "Hardcoded root for 'jsoncpp'" "${ROOT_DIR}")
         set(JsonCpp_ROOT ${JsonCpp_ROOT} PARENT_SCOPE)
     endif(JsonCpp_INCLUDE_DIR AND (JsonCpp_LIBRARY OR JsonCpp_LIBRARY_DIR) )
 endfunction(FindJsonCpp ROOT_DIR)
@@ -76,7 +76,7 @@ endif(NOT JsonCpp_FIND_VERSION)
 message(STATUS "Finding JsonCpp Version: '${JsonCpp_FIND_VERSION}'")
 
 # Determine which which components to find
-set(JsonCpp_DEFUALT_FIND_COMPONENTS jsoncpp)
+set(JsonCpp_DEFUALT_FIND_COMPONENTS jsoncpp_lib)
 if(NOT JsonCpp_FIND_COMPONENTS)
     message(DEBUG "JsonCpp_FIND_COMPONENTS NOT SPECIFIED (using default)")
     set(JsonCpp_FIND_COMPONENTS ${JsonCpp_DEFUALT_FIND_COMPONENTS})
@@ -127,10 +127,10 @@ else( JsonCpp_INCLUDE_DIR AND JsonCpp_LIBRARY )
         set(BUILD_OBJECT_LIBS ${BUILD_OBJECT_LIBS})
 
         #specify where jsoncpp will be built
-        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${UTILS_DEPS_BUILD_DIR}/jsoncpp/lib" CACHE PATH "Archive output dir." FORCE)
-        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${UTILS_DEPS_BUILD_DIR}/jsoncpp/lib" CACHE PATH "Library output dir." FORCE)
-        set(CMAKE_PDB_OUTPUT_DIRECTORY     "${UTILS_DEPS_BUILD_DIR}/jsoncpp/bin" CACHE PATH "PDB (MSVC debug symbol)output dir." FORCE)
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${UTILS_DEPS_BUILD_DIR}/jsoncpp/bin" CACHE PATH "Executable/dll output dir." FORCE)
+        # set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${UTILS_DEPS_BUILD_DIR}/jsoncpp/lib" CACHE PATH "Archive output dir." FORCE)
+        # set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${UTILS_DEPS_BUILD_DIR}/jsoncpp/lib" CACHE PATH "Library output dir." FORCE)
+        # set(CMAKE_PDB_OUTPUT_DIRECTORY     "${UTILS_DEPS_BUILD_DIR}/jsoncpp/bin" CACHE PATH "PDB (MSVC debug symbol)output dir." FORCE)
+        # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${UTILS_DEPS_BUILD_DIR}/jsoncpp/bin" CACHE PATH "Executable/dll output dir." FORCE)
         set(CMAKE_INSTALL_LIBDIR "${UTILS_DEPS_INSTALL_DIR}/jsoncpp/lib/")
         set(CMAKE_INSTALL_INCLUDEDIR "${UTILS_DEPS_INSTALL_DIR}/jsoncpp/include/")
         #################-end custom stuff-###########################
@@ -139,10 +139,10 @@ else( JsonCpp_INCLUDE_DIR AND JsonCpp_LIBRARY )
         add_subdirectory(${jsoncpp_SOURCE_DIR} ${jsoncpp_BINARY_DIR})
 
         #set values back to the original
-        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib" CACHE PATH "Archive output dir." FORCE)
-        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib" CACHE PATH "Library output dir." FORCE)
-        set(CMAKE_PDB_OUTPUT_DIRECTORY     "${CMAKE_BINARY_DIR}/bin" CACHE PATH "PDB (MSVC debug symbol)output dir." FORCE)
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin" CACHE PATH "Executable/dll output dir." FORCE)
+        # set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib" CACHE PATH "Archive output dir." FORCE)
+        # set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib" CACHE PATH "Library output dir." FORCE)
+        # set(CMAKE_PDB_OUTPUT_DIRECTORY     "${CMAKE_BINARY_DIR}/bin" CACHE PATH "PDB (MSVC debug symbol)output dir." FORCE)
+        # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin" CACHE PATH "Executable/dll output dir." FORCE)
         unset(CMAKE_INSTALL_LIBDIR)
         unset(CMAKE_INSTALL_INCLUDEDIR)
     endif(NOT jsoncpp_POPULATED)
