@@ -1,4 +1,4 @@
-# - File to specify how to find the JsconCpp library
+# - Find file to specify how to find the JsconCpp library
 #
 # CONFIUGRING FindJsonCpp.cmake
 # Define JsonCpp_ROOT to your local jsoncpp build directory
@@ -6,10 +6,10 @@
 # Specify a JsonCpp_FIND_VERSION by
 #   find_package(JsonCpp VERSION 1.9.5)
 # Sepcify the JsonCpp_FIND_COMPONENTS by:
-#   find_package(JsonCpp COMPONENTS jsoncpp_lib)
+#   find_package(JsonCpp COMPONENTS jsoncpp)
 #   NOTE: jsoncpp is the only library available with this package
 # Specify both by:
-#   find_package(JsonCpp VERSION 1.9.5 COMPONENTS jsconcpp_lib)
+#   find_package(JsonCpp VERSION 1.9.5 COMPONENTS jsoncpp)
 #
 # 
 # Once done this will define
@@ -21,7 +21,7 @@
 
 #####Finds json include dir and lib files########
 function(FindJsonCpp ROOT_DIR)
-    message(STATUS "Attempting to find jsoncpp at root: ${ROOT_DIR}")
+    message(STATUS "Attempting to find ${JsonCpp_PROJ_NAME} at root: ${ROOT_DIR}")
     
     find_path ( JsonCpp_INCLUDE_DIR NAMES "json/json.h"
                                 HINTS "${ROOT_DIR}/include/")
@@ -29,7 +29,7 @@ function(FindJsonCpp ROOT_DIR)
     message(DEBUG "JsonCpp_INCLUDE_DIR: ${JsonCpp_INCLUDE_DIR}")
 
     # todo: Do a for loop to find all components in JsonCpp_FIND_COMPONENTS
-    find_library ( JsonCpp_LIBRARY  NAMES jsoncpp
+    find_library ( JsonCpp_LIBRARY  NAMES ${JsonCpp_PROJ_NAME}
                                 HINTS "${ROOT_DIR}/lib/")
     set(JsonCpp_LIBRARY ${JsonCpp_LIBRARY} PARENT_SCOPE)
     message(DEBUG "JsonCpp_LIBRARY: ${JsonCpp_LIBRARY}")   
@@ -40,7 +40,7 @@ function(FindJsonCpp ROOT_DIR)
         set(JsonCpp_LIBRARY_DIR ${ROOT_DIR}/lib)
     endif(JsonCpp_LIBRARY) 
     set(JsonCpp_LIBRARY_DIR ${JsonCpp_LIBRARY_DIR} PARENT_SCOPE)
-    message(DEBUG "JsonCpp_LIBRARY_DIR: ${JsonCpp_LIBRARY_DIR}")      
+    message(DEBUG "JsonCpp_LIBRARY_DIR: ${JsonCpp_LIBRARY_DIR}")
     
     if(JsonCpp_INCLUDE_DIR AND (JsonCpp_LIBRARY OR JsonCpp_LIBRARY_DIR) ) 
         set(JsonCpp_INCLUDE_DIRS ${JsonCpp_INCLUDE_DIR})
@@ -52,48 +52,61 @@ function(FindJsonCpp ROOT_DIR)
         set(JsonCpp_LIBRARIES_DIR ${JsonCpp_LIBRARY_DIR})       
         set(JsonCpp_LIBRARIES_DIR ${JsonCpp_LIBRARY_DIR} PARENT_SCOPE)
         message(DEBUG "JsonCpp_LIBRARIES_DIR: ${JsonCpp_LIBRARIES_DIR}")         
-        set(JsonCpp_EXTERNAL_LIB_NAME ${JsonCpp_FIND_COMPONENTS}) # TODO: how to get this target name from FetchContent? If even possible?
-        set(JsonCpp_EXTERNAL_LIB_NAME ${JsonCpp_EXTERNAL_LIB_NAME} PARENT_SCOPE)
+        set(JsonCpp_EXTERNAL_LIB_NAME ${JsonCpp_FIND_COMPONENTS})
+        set(JsonCpp_EXTERNAL_LIB_NAME ${JsonCpp_FIND_COMPONENTS} PARENT_SCOPE)
         message(DEBUG "JsonCpp_EXTERNAL_LIB_NAME: ${JsonCpp_EXTERNAL_LIB_NAME}")      
    
         message(DEBUG "Setting JsonCpp_ROOT as: '${ROOT_DIR}'")
-        set(JsonCpp_ROOT CACHE INTERNAL "Hardcoded root for 'jsoncpp'" "${ROOT_DIR}")
-        set(JsonCpp_ROOT ${JsonCpp_ROOT} PARENT_SCOPE)
+        set(JsonCpp_ROOT "${ROOT_DIR}" CACHE INTERNAL "Hardcoded root for '${JsonCpp_PROJ_NAME}'" )
+        set(JsonCpp_ROOT $CACHE{JsonCpp_ROOT} PARENT_SCOPE)
     endif(JsonCpp_INCLUDE_DIR AND (JsonCpp_LIBRARY OR JsonCpp_LIBRARY_DIR) )
 endfunction(FindJsonCpp ROOT_DIR)
 
 ########Main############
 message(DEBUG "##############################FindJsonCpp.cmake#########################")
+set(JsonCpp_PROJ_NAME jsoncpp) # Not sure why this doesn't need parent_scope but it works for now, but keep an eye on this breaking
 
 # Determine which version of jsoncpp to find
 set(JsonCpp_DEFAULT_FIND_VERSION "master")
 if(NOT JsonCpp_FIND_VERSION)
-    message(DEBUG "JsonCpp_FIND_VERSION NOT SPECIFIED (using default)")
+    message(STATUS "JsonCpp_FIND_VERSION NOT SPECIFIED")
     set(JsonCpp_FIND_VERSION ${JsonCpp_DEFAULT_FIND_VERSION})
 else(NOT JsonCpp_FIND_VERSION)
-    message(DEBUG "JsonCpp_FIND_VERSION SPECIFIED")
+    message(STATUS "JsonCpp_FIND_VERSION SPECIFIED")
 endif(NOT JsonCpp_FIND_VERSION)
-message(STATUS "Finding JsonCpp Version: '${JsonCpp_FIND_VERSION}'")
+message(DEBUG "Finding JsonCpp Version: '${JsonCpp_FIND_VERSION}'")
 
 # Determine which which components to find
-set(JsonCpp_DEFUALT_FIND_COMPONENTS jsoncpp_lib)
+set(JsonCpp_DEFUALT_FIND_COMPONENTS jsoncpp)
 if(NOT JsonCpp_FIND_COMPONENTS)
-    message(DEBUG "JsonCpp_FIND_COMPONENTS NOT SPECIFIED (using default)")
+    message(STATUS "JsonCpp_FIND_COMPONENTS NOT SPECIFIED")
     set(JsonCpp_FIND_COMPONENTS ${JsonCpp_DEFUALT_FIND_COMPONENTS})
 else(NOT JsonCpp_FIND_COMPONENTS)
-    message(DEBUG "JsonCpp_FIND_COMPONENTS SPECIFIED")
+    message(STATUS "JsonCpp_FIND_COMPONENTS SPECIFIED")
 endif(NOT JsonCpp_FIND_COMPONENTS)
-message(STATUS "Finding JsonCpp_FIND_COMPONENTS: (${JsonCpp_FIND_COMPONENTS})")
+set(JsonCpp_FIND_COMPONENTS ${JsonCpp_FIND_COMPONENTS}_lib) # assume there is only one find compnent, if more come up, this will probably break
+message(DEBUG "Finding JsonCpp_FIND_COMPONENTS: (${JsonCpp_FIND_COMPONENTS})")
 
 # Attempt to find jsoncpp package
+message(STATUS "The cached jsoncpp root var: $CACHE{JsonCpp_ROOT}")
 if(JsonCpp_ROOT)
+    message(STATUS "The cached or provided jsoncpp root: ${JsonCpp_ROOT}")
     FindJsonCpp("${JsonCpp_ROOT}")
-endif()
+else(JsonCpp_ROOT)
+    message(STATUS "No cached or provided JsonCpp_ROOT variable")
+endif(JsonCpp_ROOT)
 
 # Check found jsoncpp found project (if found)
-message(STATUS "Checking the found jsoncpp files")
 if( JsonCpp_INCLUDE_DIR AND JsonCpp_LIBRARY )
+    message(STATUS "Checking the found ${JsonCpp_PROJ_NAME} files")
     message(STATUS "Found JsonCpp locally")
+
+    # Create an imported library from the found JsonCpp_ROOT so other subprojects can depend against it
+    add_library(${JsonCpp_EXTERNAL_LIB_NAME} SHARED IMPORTED GLOBAL)
+    set_target_properties(${JsonCpp_EXTERNAL_LIB_NAME}
+                        PROPERTIES 
+                        IMPORTED_LOCATION ${JsonCpp_LIBRARY}
+                        )
 else( JsonCpp_INCLUDE_DIR AND JsonCpp_LIBRARY )
     message(STATUS "JsonCpp was not found locally, attempting to fetch it online")
     unset(JsonCpp_INCLUDE_DIR)
@@ -101,16 +114,16 @@ else( JsonCpp_INCLUDE_DIR AND JsonCpp_LIBRARY )
     unset(JsonCpp_LIBRARY_DIR)
 
     # Declare where to find and version of jsoncpp to find
-    FetchContent_Declare(jsoncpp        
+    FetchContent_Declare(${JsonCpp_PROJ_NAME}        
                 GIT_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git"
                 GIT_TAG "${JsonCpp_FIND_VERSION}"
             )
 
     # Generate jsoncpp properties
-    FetchContent_GetProperties(jsoncpp)
+    FetchContent_GetProperties(${JsonCpp_PROJ_NAME})
     if(NOT jsoncpp_POPULATED)
         #populate jsoncpp properties
-        FetchContent_Populate(jsoncpp)
+        FetchContent_Populate(${JsonCpp_PROJ_NAME})
 
         #################-custom stuff-###########################
         #Specific options used to configure jsoncpp
@@ -127,8 +140,8 @@ else( JsonCpp_INCLUDE_DIR AND JsonCpp_LIBRARY )
         set(BUILD_OBJECT_LIBS ${BUILD_OBJECT_LIBS})
 
         #specify where jsoncpp will be built
-        set(CMAKE_INSTALL_LIBDIR "${UTILS_DEPS_INSTALL_DIR}/jsoncpp/lib/")
-        set(CMAKE_INSTALL_INCLUDEDIR "${UTILS_DEPS_INSTALL_DIR}/jsoncpp/include/")
+        set(CMAKE_INSTALL_LIBDIR "${UTILS_DEPS_INSTALL_DIR}/${JsonCpp_PROJ_NAME}/lib/")
+        set(CMAKE_INSTALL_INCLUDEDIR "${UTILS_DEPS_INSTALL_DIR}/${JsonCpp_PROJ_NAME}/include/")
         #################-end custom stuff-###########################
 
         #add jsoncpp project to my project
